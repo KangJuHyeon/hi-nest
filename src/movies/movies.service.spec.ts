@@ -15,4 +15,9 @@ describe('MoviesService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+  // 첫 번째 테스트 작성
+  it('should be 4', () => {
+    expect(2 + 3).toEqual(5);
+  });
 });
