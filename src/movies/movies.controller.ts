@@ -8,29 +8,29 @@ import {
   Body,
   Query,
 } from '@nestjs/common';
+import { Movie } from './entities/movie.entity';
+import { MoviesService } from './movies.service';
 
 @Controller('movies') // 엔트리 포인트를 관리해준다 이 부분이
 export class MoviesController {
-  @Get()
-  getAll() {
-    return 'This will return all movies';
-  }
+  // 서비스에 접근해야 하는 로직
+  constructor(private readonly moviesService: MoviesService) {}
 
-  @Get('search')
-  search(@Query('year') seachingYear: string) {
-    return `We are searching for a movie made after: ${seachingYear}`;
+  @Get()
+  getAll(): Movie[] {
+    return this.moviesService.getAll();
   }
 
   @Get(':id')
-  getOne(@Param('id') movieId: string) {
+  getOne(@Param('id') movieId: string): Movie {
     // 데코레이터 Param을 안주게되면 id값은 undefined로 출력된다.
-    return `This will return one movie with the id: ${movieId}`;
+    return this.moviesService.getOne(movieId);
   }
 
   @Post()
   create(@Body() movieData) {
     console.log(movieData);
-    return movieData;
+    return this.moviesService.create(movieData);
   }
 
   @Patch(':id')
@@ -43,6 +43,6 @@ export class MoviesController {
 
   @Delete(':id')
   remove(@Param('id') movieId: string) {
-    return `This will delete a movie with the id: ${movieId}`;
+    return this.moviesService.deleteOne(movieId);
   }
 }
