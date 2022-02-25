@@ -15,7 +15,7 @@ describe('AppController (e2e)', () => {
     app.useGlobalPipes(
       new ValidationPipe({
         // 타입스크립트 자체에서 코드에 대한 유효성 검사를 해주는 매우 좋은 아이
-        whitelist: true,
+        whitelist: true, // 환경 일치시키기 (main.ts 참고)
         forbidNonWhitelisted: true,
         transform: true, // 유저들이 보낸 것을 우리가 원하는 실제 타입으로 변환해준다.
       }),
@@ -25,9 +25,9 @@ describe('AppController (e2e)', () => {
 
   it('/ (GET)', () => {
     return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Welcom to my Movie API');
+      .get('/') // 엔드포인트
+      .expect(200) // status code
+      .expect('Welcom to my Movie API'); // res
   });
 
   describe('/movies', () => {
@@ -36,7 +36,7 @@ describe('AppController (e2e)', () => {
     });
 
     // 서버에 request해서 movies에 post할 때 이 정보를 보내면 201을 받는지 테스트하는거야
-    it('POST', () => {
+    it('POST 201', () => {
       return request(app.getHttpServer())
         .post('/movies')
         .send({
@@ -45,6 +45,18 @@ describe('AppController (e2e)', () => {
           genres: ['test'],
         })
         .expect(201);
+    });
+
+    it('POST 400', () => {
+      return request(app.getHttpServer())
+        .patch('/movies/1')
+        .send({
+          title: 'Test',
+          year: 2000,
+          genres: ['test'],
+          other: 'thing',
+        })
+        .expect(400);
     });
 
     // 404가 잘나오는 것을 확인
@@ -56,11 +68,25 @@ describe('AppController (e2e)', () => {
       it('GET 200', () => {
         return request(app.getHttpServer()).get('/movies/1').expect(200);
       });
+
       it('GET 404', () => {
         return request(app.getHttpServer()).get('/movies/999').expect(404);
       });
-      it.todo('POST');
-      it.todo('PATCH');
+
+      it('PATCH 200', () => {
+        return request(app.getHttpServer())
+          .patch('/movies/1')
+          .send({
+            title: 'Test',
+            year: 2000,
+            genres: ['test'],
+          })
+          .expect(200);
+      });
+
+      it('DELETE 200', () => {
+        return request(app.getHttpServer()).delete('/movies/1').expect(200);
+      });
     });
   });
 });
